@@ -30,7 +30,7 @@
         </div>
         <div>
             <h3>The Song</h3>
-            <form>
+            <form name="formSong">
                 <input type="hidden" name="songId" value="0" />
                 <div class="form-group">
                     <label>Name</label>
@@ -177,8 +177,8 @@
                 "<td>" + song.name + "</td> <td>" + song.artist.name + "</td>" +
                 "<td>" + song.style.name + "</td> <td>" + song.year + "</td>" +
                 "<td>" + song.album + "</td> " +
-                "<td><a class='editSong' data-id='" + song.Id + "'>Edit</a> | " +
-                "<a class='removeSong' data-id='" + song.Id + "'>Delete</a></td></tr>";
+                "<td><a class='editSong' data-id='" + song.id + "'>Edit</a> | " +
+                "<a class='removeSong' data-id='" + song.id + "'>Delete</a></td></tr>";
         };
         function GetArtists() {
             $.ajax({
@@ -202,8 +202,8 @@
         var rowA = function (artist) {
             return "<tr data-rowid='" + artist.id + "'><td>" + artist.id + "</td>" +
                 "<td>" + artist.name + "</td> <td>" + artist.photo + "</td>" +
-                "<td><a class='editArtist' data-id='" + artist.Id + "'>Edit</a> | " +
-                "<a class='removeArtist' data-id='" + artist.Id + "'>Delete</a></td></tr>";
+                "<td><a class='editArtist' data-id='" + artist.id + "'>Edit</a> | " +
+                "<a class='removeArtist' data-id='" + artist.id + "'>Delete</a></td></tr>";
         };
         function GetUsers() {
             $.ajax({
@@ -228,14 +228,61 @@
             return "<tr data-rowid='" + user.id + "'><td>" + user.id + "</td>" +
                 "<td>" + user.name + "</td> <td>" + user.age + "</td>" +
                 "<td>" + user.email + "</td> <td>" + user.level + "</td>" +
-                "<td><a class='editUser' data-id='" + user.Id + "'>Edit</a> | " +
-                "<a class='removeUser' data-id='" + user.Id + "'>Delete</a></td></tr>";
+                "<td><a class='editUser' data-id='" + user.id + "'>Edit</a> | " +
+                "<a class='removeUser' data-id='" + user.id + "'>Delete</a></td></tr>";
         };
         $("body").on("click", ".editSong", function () {
             var id = $(this).data("id");
             GetSong(id);
         });
-
+        function GetSong(id) {
+            $.ajax({
+                url: 'https://localhost:7249/api/song/' + id,
+                method: 'GET',
+                contentType: "application/json",
+                success: function (song) {
+                    var form = document.forms["formSong"];
+                    form.elements["songId"].value = song.id;
+                    form.elements["songname"].value = song.name;
+                    form.elements["artistName"].value = song.artist.name;
+                    form.elements["genre"].value = song.style.name;
+                    form.elements["year"].value = song.year;
+                    form.elements["album"].value = song.album;
+                    form.elements["text"].value = song.text;
+                    form.elements["file"].value = song.file;
+                },
+                error: function (x, y, z) {
+                    alert(x + '\n' + y + '\n' + z);
+                }
+            });
+        }
+        function EditSong(songId, songName, songArtyist, songStyle, songYear,songAlbum,songText,songFile) {
+            let request = JSON.stringify({
+                id: songId,
+                name: songName,
+                artist: songArtyist,
+                style: songStyle,
+                year: songYear,
+                album: songAlbum,
+                text: songText,
+                file: songFile
+            });
+            $.ajax({
+                url: "https://localhost:7249/api/song",
+                contentType: "application/json",
+                method: "PUT",
+                data: request,
+                success: function (song) {
+                    $("tr[data-rowid='" + song.id + "']").replaceWith(rowS(song));
+                    var form = document.forms["formSong"];
+                    form.reset();
+                    form.elements["songId"].value = 0;
+                },
+                error: function (x, y, z) {
+                    alert(x + '\n' + y + '\n' + z);
+                }
+            })
+        }
     </script>
 
 </body>
