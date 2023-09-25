@@ -8,6 +8,7 @@
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"></script>
 </head>
 <body>
+    <div style="width:100%;text-align:center"><h1>Testing music portal</h1></div>
     <div style="display:flex; justify-content:space-around">
         <div>
             <h2>List of songs</h2>
@@ -15,16 +16,16 @@
                 <thead>
                     <tr>
                         <th>Id</th>
-                        <th style="width:250px">Name</th>
+                        <th style="width:220px">Name</th>
                         <th style="width:150px">Atist</th>
                         <th style="width:100px">Genre</th>
                         <th>Year</th>
-                        <th style="width:250px">Album</th>
-                      
+                        <th style="width:220px">Album</th>
+
                         <th style="width:150px"></th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody id="songs"></tbody>
             </table>
         </div>
         <div>
@@ -59,46 +60,183 @@
                     <input class="form-control" name="file" />
                 </div>
                 <div class="panel-body">
-                    <a id="submit" class="btn btn-primary" style="color:white">Сохранить</a>
-                    <a id="reset" class="btn btn-primary" style="color:white">Сбросить</a>
+                    <a id="saveSong" class="btn btn-primary" style="color:white">Save</a>
+                    <a id="cancelSong" class="btn btn-primary" style="color:white">Cancel</a>
                 </div>
             </form>
         </div>
     </div>
-<script>
+    <hr />
+    <div style="display:flex; justify-content:space-around">
+        <div>
+            <h2>List of artists</h2>
+            <table class="table table-condensed table-striped ">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th style="width:250px">Name</th>
+                        <th style="width:250px">Photo</th>
+                        <th style="width:150px"></th>
+                    </tr>
+                </thead>
+                <tbody id="artists"></tbody>
+            </table>
+        </div>
+        <div>
+            <h3>The Artist</h3>
+            <form>
+                <input type="hidden" name="artistId" value="0" />
+                <div class="form-group">
+                    <label>Name</label>
+                    <input class="form-control" name="Artist_Name" />
+                </div>
+                <div class="form-group ">
+                    <label>Artist</label>
+                    <input class="form-control" name="Artist_Photo" />
+                </div>
+                <div class="panel-body">
+                    <a id="saveArtist" class="btn btn-primary" style="color:white">Save</a>
+                    <a id="cancelArtist" class="btn btn-primary" style="color:white">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr />
+    <div style="display:flex; justify-content:space-around">
+        <div>
+            <h2>List of users</h2>
+            <table class="table table-condensed table-striped ">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th style="width:250px">Name</th>
+                        <th>Age</th>
+                        <th style="width:250px">Email</th>
+                        <th>Level</th>
+                        <th style="width:150px"></th>
+                    </tr>
+                </thead>
+                <tbody id="users"></tbody>
+            </table>
+        </div>
+        <div>
+            <h3>The User</h3>
+            <form>
+                <input type="hidden" name="userId" value="0" />
+                <div class="form-group">
+                    <label>Name</label>
+                    <input class="form-control" name="User_Name" />
+                </div>
+                <div class="form-group ">
+                    <label>Age</label>
+                    <input class="form-control" name="Age" />
+                </div>
+                <div class="form-group ">
+                    <label>Email</label>
+                    <input class="form-control" name="Email" />
+                </div>
+                <div class="form-group ">
+                    <label>Level</label>
+                    <input class="form-control" name="Level" />
+                </div>
+                <div class="panel-body">
+                    <a id="saveUser" class="btn btn-primary" style="color:white">Save</a>
+                    <a id="cancelUser" class="btn btn-primary" style="color:white">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
 
-    // загрузка песен
-    GetSongs();
+        // загрузка песен
+        GetSongs();
+        GetArtists();  //загрузка исполнителей
+        GetUsers();   //загрука пользователей
+        // Получение всех песен
+        function GetSongs() {
+            $.ajax({
+                url: 'https://localhost:7249/api/song',
+                method: "GET",
+                contentType: "application/json",
+                success: function (songs) {
 
-    // Получение всех песен
-    function GetSongs() {
-        $.ajax({
-            url: 'https://localhost:7249/api/song',
-            method: "GET",
-            contentType: "application/json",
-            success: function (songs) {
+                    var rows = "";
+                    $.each(songs, function (index, song) {
+                        // добавляем полученные элементы в таблицу
+                        rows += rowS(song);
+                    })
+                    $("#songs").append(rows);
+                },
+                error: function (x, y, z) {
+                    alert(x + '\n' + y + '\n' + z);
+                }
+            });
+        }
+        var rowS = function (song) {
+            return "<tr data-rowid='" + song.id + "'><td>" + song.id + "</td>" +
+                "<td>" + song.name + "</td> <td>" + song.artist.name + "</td>" +
+                "<td>" + song.style.name + "</td> <td>" + song.year + "</td>" +
+                "<td>" + song.album + "</td> " +
+                "<td><a class='editSong' data-id='" + song.Id + "'>Edit</a> | " +
+                "<a class='removeSong' data-id='" + song.Id + "'>Delete</a></td></tr>";
+        };
+        function GetArtists() {
+            $.ajax({
+                url: 'https://localhost:7249/api/artist',
+                method: "GET",
+                contentType: "application/json",
+                success: function (artists) {
 
-                var rows = "";
-                $.each(songs, function (index, song) {
-                    // добавляем полученные элементы в таблицу
-                    rows += row(song);
-                })
-                $("table tbody").append(rows);
-            },
-            error: function (x, y, z) {
-                alert(x + '\n' + y + '\n' + z);
-            }
+                    var rows = "";
+                    $.each(artists, function (index, artist) {
+                        // добавляем полученные элементы в таблицу
+                        rows += rowA(artist);
+                    })
+                    $("#artists").append(rows);
+                },
+                error: function (x, y, z) {
+                    alert(x + '\n' + y + '\n' + z);
+                }
+            });
+        }
+        var rowA = function (artist) {
+            return "<tr data-rowid='" + artist.id + "'><td>" + artist.id + "</td>" +
+                "<td>" + artist.name + "</td> <td>" + artist.photo + "</td>" +
+                "<td><a class='editArtist' data-id='" + artist.Id + "'>Edit</a> | " +
+                "<a class='removeArtist' data-id='" + artist.Id + "'>Delete</a></td></tr>";
+        };
+        function GetUsers() {
+            $.ajax({
+                url: 'https://localhost:7249/api/user',
+                method: "GET",
+                contentType: "application/json",
+                success: function (users) {
+
+                    var rows = "";
+                    $.each(users, function (index, user) {
+                        // добавляем полученные элементы в таблицу
+                        rows += rowU(user);
+                    })
+                    $("#users").append(rows);
+                },
+                error: function (x, y, z) {
+                    alert(x + '\n' + y + '\n' + z);
+                }
+            });
+        }
+        var rowU = function (user) {
+            return "<tr data-rowid='" + user.id + "'><td>" + user.id + "</td>" +
+                "<td>" + user.name + "</td> <td>" + user.age + "</td>" +
+                "<td>" + user.email + "</td> <td>" + user.level + "</td>" +
+                "<td><a class='editUser' data-id='" + user.Id + "'>Edit</a> | " +
+                "<a class='removeUser' data-id='" + user.Id + "'>Delete</a></td></tr>";
+        };
+        $("body").on("click", ".editSong", function () {
+            var id = $(this).data("id");
+            GetSong(id);
         });
-    }
-    var row = function (song) {
-        return "<tr data-rowid='" + song.id + "'><td>" + song.id + "</td>" +
-            "<td>" + song.name + "</td> <td>" + song.artist.name + "</td>" +
-            "<td>" + song.style.name + "</td> <td>" + song.year + "</td>" +
-            "<td>" + song.album + "</td> " +
-            "<td><a class='editLink' data-id='" + song.Id + "'>Edit</a> | " +
-            "<a class='removeLink' data-id='" + song.Id + "'>Delete</a></td></tr>";
-    };
-</script>
+
+    </script>
 
 </body>
 </html>
