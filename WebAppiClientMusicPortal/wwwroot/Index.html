@@ -283,6 +283,21 @@
                 }
             })
         }
+        $("#saveSong").click(function (e) {
+            e.preventDefault();
+            var form = document.forms["formSong"];
+            var id=form.elements["songId"].value;
+            var name = form.elements["songname"].value;
+            var artist=form.elements["artistName"].value;
+            var style=form.elements["genre"].value ;
+            var year=form.elements["year"].value;
+           var album= form.elements["album"].value;
+            var text=form.elements["text"].value;
+            var file=form.elements["file"].value;
+            if (id == 0) { } // CreateStudent(name, artist,style,year,album,text,file);
+            else
+                EditSong(id, name, artist, style, year, album, text, file);
+        });
     </script>
 
 </body>
