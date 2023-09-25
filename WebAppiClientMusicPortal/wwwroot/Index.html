@@ -2,9 +2,103 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title></title>
+    <meta name="viewport" content="width=device-width" />
+    <title>Список студентов</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"></script>
 </head>
 <body>
+    <div style="display:flex; justify-content:space-around">
+        <div>
+            <h2>List of songs</h2>
+            <table class="table table-condensed table-striped ">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th style="width:250px">Name</th>
+                        <th style="width:150px">Atist</th>
+                        <th style="width:100px">Genre</th>
+                        <th>Year</th>
+                        <th style="width:250px">Album</th>
+                      
+                        <th style="width:150px"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div>
+            <h3>The Song</h3>
+            <form>
+                <input type="hidden" name="songId" value="0" />
+                <div class="form-group">
+                    <label>Name</label>
+                    <input class="form-control" name="songname" />
+                </div>
+                <div class="form-group ">
+                    <label>Artist</label>
+                    <input class="form-control" name="artistName" />
+                </div>
+                <div class="form-group ">
+                    <label>Genre</label>
+                    <input class="form-control" name="genre" />
+                </div>
+                <div class="form-group ">
+                    <label>Year</label>
+                    <input class="form-control" name="year" />
+                </div>
+                <div class="form-group ">
+                    <label>Album</label>
+                    <input class="form-control" name="album" />
+                </div> <div class="form-group ">
+                    <label>Text</label><br />
+                    <textarea name="text"></textarea>
+                </div>
+                <div class="form-group ">
+                    <label>File</label>
+                    <input class="form-control" name="file" />
+                </div>
+                <div class="panel-body">
+                    <a id="submit" class="btn btn-primary" style="color:white">Сохранить</a>
+                    <a id="reset" class="btn btn-primary" style="color:white">Сбросить</a>
+                </div>
+            </form>
+        </div>
+    </div>
+<script>
+
+    // загрузка песен
+    GetSongs();
+
+    // Получение всех песен
+    function GetSongs() {
+        $.ajax({
+            url: 'https://localhost:7249/api/song',
+            method: "GET",
+            contentType: "application/json",
+            success: function (songs) {
+
+                var rows = "";
+                $.each(songs, function (index, song) {
+                    // добавляем полученные элементы в таблицу
+                    rows += row(song);
+                })
+                $("table tbody").append(rows);
+            },
+            error: function (x, y, z) {
+                alert(x + '\n' + y + '\n' + z);
+            }
+        });
+    }
+    var row = function (song) {
+        return "<tr data-rowid='" + song.id + "'><td>" + song.id + "</td>" +
+            "<td>" + song.name + "</td> <td>" + song.artist.name + "</td>" +
+            "<td>" + song.style.name + "</td> <td>" + song.year + "</td>" +
+            "<td>" + song.album + "</td> " +
+            "<td><a class='editLink' data-id='" + song.Id + "'>Edit</a> | " +
+            "<a class='removeLink' data-id='" + song.Id + "'>Delete</a></td></tr>";
+    };
+</script>
 
 </body>
 </html>
